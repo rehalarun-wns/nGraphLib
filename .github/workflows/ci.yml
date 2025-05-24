@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: bash utils/install_deps.sh
+
+      - name: Build (Debug)
+        run: bash utils/build.sh -d
+
+      - name: Run tests (Debug)
+        run: bash utils/run_tests.sh -v
+
+      - name: Build (Release)
+        run: bash utils/build.sh -r
+
+      - name: Run tests (Release)
+        run: bash utils/run_tests.sh -v -j 2

@@ -1,0 +1,48 @@
+# Build directories
+/build/
+/build*/
+/build
+
+# CMake files
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# Compiled object files, libraries, executables
+*.o
+*.obj
+*.so
+*.a
+*.lib
+*.dll
+*.exe
+*.out
+
+# Test logs
+*.log
+
+# VSCode settings
+.vscode/
+
+# OS/Editor files
+.DS_Store
+Thumbs.db
+
+# Generated installers/packages
+*.tar.gz
+*.zip
+*.deb
+*.rpm
+
+# Ignore by-products in graphs/
+graphs/CMakeFiles/
+graphs/CMakeCache.txt
+graphs/cmake_install.cmake
+graphs/Makefile
+
+# Ignore by-products in subfolders
+**/CMakeFiles/
+**/CMakeCache.txt
+**/cmake_install.cmake
+**/Makefile
