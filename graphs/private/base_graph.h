@@ -86,7 +86,7 @@ public:
         adjacencyList.clear();
     }
 
-    void PrintGraph() const
+    void print() const
     {
         std::cout << "Graph adjacency list:" << std::endl;
         std::cout << "VERTEX" << ": " << "EDGES" << std::endl;

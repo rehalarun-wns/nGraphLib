@@ -7,7 +7,10 @@
 #include <vector>
 
 // DirectedGraph: Inherits from BaseGraph and implements directed edge logic.
-template <typename VertexTy, typename WeightT = double, typename HashTy = std::hash<VertexTy>, bool UsePMR = false>
+template <typename VertexTy,
+          typename WeightT = double,
+          typename HashTy = std::hash<VertexTy>,
+          bool UsePMR = false>
 class DirectedGraph : public BaseGraph<VertexTy, WeightT, HashTy, UsePMR>
 {
     using Base = BaseGraph<VertexTy, WeightT, HashTy, UsePMR>;
@@ -17,7 +20,10 @@ class DirectedGraph : public BaseGraph<VertexTy, WeightT, HashTy, UsePMR>
 public:
     using Base::Base; // Inherit constructors
 
-    void AddEdge(const VertexTy &from, const VertexTy &to, std::optional<WeightT> weight = std::nullopt) override;
+    void AddEdge(const VertexTy &from,
+                 const VertexTy &to,
+                 std::optional<WeightT> weight = std::nullopt) override;
+
     void AddEdges(const std::vector<std::tuple<VertexTy, VertexTy, WeightT>> &edges) override;
     void RemoveEdge(const VertexTy &from, const VertexTy &to) override;
     void RemoveVertex(const VertexTy &vertex) override;
@@ -28,24 +34,33 @@ public:
 // --- Implementation ---
 
 template <typename VertexTy, typename WeightT, typename HashTy, bool UsePMR>
-void DirectedGraph<VertexTy, WeightT, HashTy, UsePMR>::AddEdge(const VertexTy &from, const VertexTy &to, std::optional<WeightT> weight)
+void DirectedGraph<VertexTy, WeightT, HashTy, UsePMR>::AddEdge(const VertexTy &from,
+                                                               const VertexTy &to,
+                                                               std::optional<WeightT> weight)
 {
     if (!weight)
         weight = static_cast<WeightT>(1);
     this->adjacencyList[from][to] = *weight;
-}
-
-template <typename VertexTy, typename WeightT, typename HashTy, bool UsePMR>
-void DirectedGraph<VertexTy, WeightT, HashTy, UsePMR>::AddEdges(const std::vector<std::tuple<VertexTy, VertexTy, WeightT>> &edges)
-{
-    for (const auto &[from, to, weight] : edges)
+    // insert an empty map for 'to' if it doesn't exist
+    if (!this->adjacencyList.contains(to))
     {
-        this->adjacencyList[from][to] = weight;
+        this->adjacencyList[to] = {};
     }
 }
 
 template <typename VertexTy, typename WeightT, typename HashTy, bool UsePMR>
-void DirectedGraph<VertexTy, WeightT, HashTy, UsePMR>::RemoveEdge(const VertexTy &from, const VertexTy &to)
+void DirectedGraph<VertexTy, WeightT, HashTy, UsePMR>::AddEdges(
+    const std::vector<std::tuple<VertexTy, VertexTy, WeightT>> &edges)
+{
+    for (const auto &[from, to, weight] : edges)
+    {
+        this->AddEdge(from, to, weight);
+    }
+}
+
+template <typename VertexTy, typename WeightT, typename HashTy, bool UsePMR>
+void DirectedGraph<VertexTy, WeightT, HashTy, UsePMR>::RemoveEdge(const VertexTy &from,
+                                                                  const VertexTy &to)
 {
     auto it = this->adjacencyList.find(from);
     if (it != this->adjacencyList.end())
@@ -65,7 +80,8 @@ void DirectedGraph<VertexTy, WeightT, HashTy, UsePMR>::RemoveVertex(const Vertex
     // Remove all incoming edges
     for (auto &pair : this->adjacencyList)
     {
-        pair.second.erase(vertex);
+        if (pair.second.contains(vertex))
+            pair.second.erase(vertex);
     }
 }
 

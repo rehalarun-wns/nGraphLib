@@ -1,68 +1,69 @@
-#include <gtest/gtest.h>
-#include "../directed_graph.h"
+#include "fixtures.h"
+#include "params.h"
 
-// Fixture for DirectedGraph<int>
-class DirectedGraphIntTest : public ::testing::Test
+TEST_F(DirectedGraphIntTest, CountVertices)
 {
-protected:
-    DirectedGraph<int> g;
+    EXPECT_EQ(g.GetNumOfVertices(), 20);
+}
 
-    void SetUp() override
-    {
-        // Optional: common setup for each test
-    }
-
-    void TearDown() override
-    {
-        // Optional: cleanup after each test
-    }
-};
-
-TEST_F(DirectedGraphIntTest, AddAndCountVerticesAndEdges)
+TEST_F(DirectedGraphIntTest, CountEdges)
 {
-    g.AddEdge(1, 2);
-    g.AddEdge(2, 3);
-
-    EXPECT_EQ(g.GetNumOfVertices(), 2); // Only vertices with outgoing edges are counted
-    EXPECT_EQ(g.GetNumOfEdges(), 2);
+    EXPECT_EQ(g.GetNumOfEdges(), 45);
 }
 
 TEST_F(DirectedGraphIntTest, RemoveEdge)
 {
-    g.AddEdge(1, 2);
     g.RemoveEdge(1, 2);
+    EXPECT_EQ(g.GetNumOfEdges(), 44);
+    g.RemoveEdge(1, 3);
+    EXPECT_EQ(g.GetNumOfEdges(), 43);
+    g.RemoveEdge(3, 1);
+    EXPECT_EQ(g.GetNumOfEdges(), 42);
+}
 
+TEST(EmptyGraphOperation, RemoveEdgeFromEmptyGraph)
+{
+    DirectedGraph<int> g;
+    g.RemoveEdge(1, 2); // Should not crash or throw
+    EXPECT_EQ(g.GetNumOfVertices(), 0);
     EXPECT_EQ(g.GetNumOfEdges(), 0);
 }
 
 TEST_F(DirectedGraphIntTest, RemoveVertex)
 {
-    g.AddEdge(1, 2);
-    g.AddEdge(2, 3);
     g.RemoveVertex(2);
+    EXPECT_EQ(g.GetNumOfVertices(), 19);
+    EXPECT_EQ(g.GetNumOfEdges(), 41);
+    g.RemoveVertex(1);
+    EXPECT_EQ(g.GetNumOfVertices(), 18);
+    EXPECT_EQ(g.GetNumOfEdges(), 36);
+}
 
-    EXPECT_EQ(g.GetNumOfVertices(), 1);
+TEST_F(DirectedGraphIntTest, RemoveVertexFromEmptyGraph)
+{
+    DirectedGraph<int> g;
+    g.RemoveVertex(1); // Should not crash or throw
+    EXPECT_EQ(g.GetNumOfVertices(), 0);
     EXPECT_EQ(g.GetNumOfEdges(), 0);
 }
 
-// Parameterized test for edge addition
-struct EdgeParam
+TEST(AddTests, AddEdge)
 {
-    int from;
-    int to;
-};
-
-class DirectedGraphParamTest : public ::testing::TestWithParam<EdgeParam>
-{
-};
+    DirectedGraph<int> g;
+    g.AddEdge(1, 2, 1.0);
+    EXPECT_EQ(g.GetNumOfVertices(), 2);
+    EXPECT_EQ(g.GetNumOfEdges(), 1);
+    g.AddEdge(2, 3, 2.5);
+    EXPECT_EQ(g.GetNumOfVertices(), 3);
+    EXPECT_EQ(g.GetNumOfEdges(), 2);
+}
 
 TEST_P(DirectedGraphParamTest, AddSingleEdge)
 {
     DirectedGraph<int> g;
     auto param = GetParam();
-    g.AddEdge(param.from, param.to);
-
-    EXPECT_EQ(g.GetNumOfVertices(), 1);
+    g.AddEdge(param.from, param.to, 1.0);
+    EXPECT_EQ(g.GetNumOfVertices(), 2);
     EXPECT_EQ(g.GetNumOfEdges(), 1);
 }
 
