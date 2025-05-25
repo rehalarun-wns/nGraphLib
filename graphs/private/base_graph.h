@@ -80,6 +80,20 @@ public:
                                      { return pair.second.size(); });
     }
 
+    [[nodiacrd]] WeightT GetEdgeWeight(const VertexTy &from, const VertexTy &to) const
+    {
+        auto it = adjacencyList.find(from);
+        if (it != adjacencyList.end())
+        {
+            auto edgeIt = it->second.find(to);
+            if (edgeIt != it->second.end())
+            {
+                return edgeIt->second;
+            }
+        }
+        throw std::runtime_error("Edge does not exist");
+    }
+
     // Clears the graph by removing all edges and vertices.
     void clear()
     {

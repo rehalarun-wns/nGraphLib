@@ -48,34 +48,40 @@ void UndirectedGraph<VertexTy, WeightT, HashTy, UsePMR>::AddEdges(const std::vec
 template <typename VertexTy, typename WeightT, typename HashTy, bool UsePMR>
 void UndirectedGraph<VertexTy, WeightT, HashTy, UsePMR>::RemoveEdge(const VertexTy &from, const VertexTy &to)
 {
-    auto it = this->adjacencyList.find(from);
-    if (it != this->adjacencyList.end())
-    {
-        it->second.erase(to);
-        if (it->second.empty())
-            this->adjacencyList.erase(it);
-    }
+    auto it_from = this->adjacencyList.find(from);
+    if (it_from == this->adjacencyList.end() || it_from->second.find(to) == it_from->second.end())
+        throw std::runtime_error("Edge does not exist between 'from' and 'to'.");
 
-    // Remove the reverse edge
-    it = this->adjacencyList.find(to);
-    if (it != this->adjacencyList.end())
-    {
-        it->second.erase(from);
-        if (it->second.empty())
-            this->adjacencyList.erase(it);
-    }
+    auto it_to = this->adjacencyList.find(to);
+    if (it_to == this->adjacencyList.end() || it_to->second.find(from) == it_to->second.end())
+        throw std::runtime_error("Reverse edge does not exist between 'to' and 'from'.");
+
+    // Remove the edge from 'from' to 'to'
+    it_from->second.erase(to);
+    if (it_from->second.empty())
+        this->adjacencyList.erase(it_from);
+
+    // Remove the reverse edge from 'to' to 'from'
+    it_to->second.erase(from);
+    if (it_to->second.empty())
+        this->adjacencyList.erase(it_to);
 }
 
 template <typename VertexTy, typename WeightT, typename HashTy, bool UsePMR>
 void UndirectedGraph<VertexTy, WeightT, HashTy, UsePMR>::RemoveVertex(const VertexTy &vertex)
 {
+    const auto does_vertex_exist = this->adjacencyList.contains(vertex);
+    if (!does_vertex_exist)
+        throw std::runtime_error("Vertex does not exist in the graph.");
+
     // Remove all edges connected to the vertex
     this->adjacencyList.erase(vertex);
 
     // Remove all edges from other vertices to this vertex
     for (auto &pair : this->adjacencyList)
     {
-        pair.second.erase(vertex);
+        if (pair.second.contains(vertex))
+            pair.second.erase(vertex);
     }
 }
 
@@ -83,8 +89,9 @@ template <typename VertexTy, typename WeightT, typename HashTy, bool UsePMR>
 size_t UndirectedGraph<VertexTy, WeightT, HashTy, UsePMR>::GetNumOfEdges() const
 {
     size_t num_of_directed_edges = this->GetNumOfDirectedEdges();
-    assert(num_of_directed_edges % 2 == 0);
-    return num_of_directed_edges / 2.0;
+    if (num_of_directed_edges % 2 != 0)
+        throw std::runtime_error("The number of directed edges is not even, indicating an inconsistency in the undirected graph.");
+    return size_t(num_of_directed_edges / 2.0); // Each undirected edge is counted twice
 }
 
 #endif // _UNDIRECTED_GRAPH_H_

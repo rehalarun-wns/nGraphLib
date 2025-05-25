@@ -24,7 +24,7 @@ TEST_F(DirectedGraphIntTest, RemoveEdge)
 TEST(EmptyGraphOperation, RemoveEdgeFromEmptyGraph)
 {
     DirectedGraph<int> g;
-    g.RemoveEdge(1, 2); // Should not crash or throw
+    EXPECT_THROW(g.RemoveEdge(1, 2), std::runtime_error);
     EXPECT_EQ(g.GetNumOfVertices(), 0);
     EXPECT_EQ(g.GetNumOfEdges(), 0);
 }
@@ -42,10 +42,48 @@ TEST_F(DirectedGraphIntTest, RemoveVertex)
 TEST_F(DirectedGraphIntTest, RemoveVertexFromEmptyGraph)
 {
     DirectedGraph<int> g;
-    g.RemoveVertex(1); // Should not crash or throw
+    EXPECT_THROW(g.RemoveVertex(1), std::runtime_error);
     EXPECT_EQ(g.GetNumOfVertices(), 0);
     EXPECT_EQ(g.GetNumOfEdges(), 0);
 }
+
+struct EdgeWeightParam
+{
+    int from;
+    int to;
+    double expected_weight;
+    bool expect_throw;
+};
+
+class DirectedGraphEdgeWeightTest : public DirectedGraphIntTest, public ::testing::WithParamInterface<EdgeWeightParam>
+{
+};
+
+TEST_P(DirectedGraphEdgeWeightTest, GetEdgeWeight)
+{
+    const auto &param = GetParam();
+    if (param.expect_throw)
+    {
+        EXPECT_THROW(g.GetEdgeWeight(param.from, param.to), std::runtime_error);
+    }
+    else
+    {
+        EXPECT_EQ(g.GetEdgeWeight(param.from, param.to), param.expected_weight);
+    }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    EdgeWeightCases,
+    DirectedGraphEdgeWeightTest,
+    ::testing::Values(
+        EdgeWeightParam{1, 2, 1.0, false},
+        EdgeWeightParam{3, 1, 2.0, false},
+        EdgeWeightParam{1, 3, 2.5, false},
+        EdgeWeightParam{2, 4, 1.2, false},
+        EdgeWeightParam{12, 18, -2.8, false},
+        EdgeWeightParam{8, 20, 0.0, true}, // Edge does not exist
+        EdgeWeightParam{18, 1, 0.0, true}  // Edge does not exist
+        ));
 
 TEST(AddTests, AddEdge)
 {

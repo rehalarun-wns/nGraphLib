@@ -12,4 +12,8 @@ class DirectedGraphParamTest : public ::testing::TestWithParam<EdgeParam>
 {
 };
 
+class UndirectedGraphParamTest : public ::testing::TestWithParam<EdgeParam>
+{
+};
+
 #endif // _GRAPHS_TESTS_PARAMS_H_

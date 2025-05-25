@@ -69,11 +69,20 @@ void DirectedGraph<VertexTy, WeightT, HashTy, UsePMR>::RemoveEdge(const VertexTy
         if (it->second.empty())
             this->adjacencyList.erase(it);
     }
+    else
+    {
+        throw std::runtime_error("Edge does not exist");
+    }
 }
 
 template <typename VertexTy, typename WeightT, typename HashTy, bool UsePMR>
 void DirectedGraph<VertexTy, WeightT, HashTy, UsePMR>::RemoveVertex(const VertexTy &vertex)
 {
+    // Check if the vertex exists
+    const auto does_vertex_exist = this->adjacencyList.contains(vertex);
+    if (!does_vertex_exist)
+        throw std::runtime_error("Vertex does not exist");
+
     // Remove all outgoing edges
     this->adjacencyList.erase(vertex);
 
