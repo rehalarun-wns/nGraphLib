@@ -4,6 +4,7 @@
 #include "algorithm_types.h"
 #include "algorithms/abstract_algo.h"
 #include "algorithms/dfs.h"
+#include "algorithms/bfs.h"
 
 namespace Graph
 {
@@ -17,6 +18,8 @@ namespace Graph
             {
             case AlgorithmType::DFS_Ty:
                 return std::make_unique<DFS<GraphT>>();
+            case AlgorithmType::BFS_Ty:
+                return std::make_unique<BFS<GraphT>>();
             default:
                 return nullptr;
             }

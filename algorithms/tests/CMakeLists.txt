@@ -3,6 +3,7 @@ enable_testing()
 add_executable(graphs_algo_tests
     test_main.cpp
     test_dfs.cpp
+    test_bfs.cpp
 )
 
 target_link_libraries(graphs_algo_tests

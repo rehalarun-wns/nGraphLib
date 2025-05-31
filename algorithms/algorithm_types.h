@@ -6,6 +6,7 @@ namespace Graph
     enum class AlgorithmType
     {
         DFS_Ty, // Depth-First Search
+        BFS_Ty, // Breadth-First Search
     };
 
 } // namespace Graph
