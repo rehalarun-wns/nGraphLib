@@ -48,23 +48,31 @@ fi
 
 cd "$BUILD_DIR" || exit 1
 
-# Try to find the test binary
-TEST_BIN=$(find . -type f -executable -name "graphs_tests" | head -n 1)
+# Find all test binaries ending with _tests
+TEST_BINS=$(find . -type f -executable -name "*_tests")
 
-if [[ -z "$TEST_BIN" ]]; then
-    echo -e "${RED}Test binary 'graphs_tests' not found in $BUILD_DIR.${NC}"
+if [[ -z "$TEST_BINS" ]]; then
+    echo -e "${RED}No test binaries found in $BUILD_DIR.${NC}"
     exit 1
 fi
 
-echo -e "${BLUE}Running $TEST_BIN with GoogleTest output...${NC}"
+# Truncate log file at start
+>"$LOG_FILE"
 
-if [[ "$VERBOSE" -eq 1 ]]; then
-    "$TEST_BIN" --gtest_color=yes | tee "$LOG_FILE"
-else
-    "$TEST_BIN" --gtest_color=no >"$LOG_FILE"
-fi
+ALL_PASS=1
+for TEST_BIN in $TEST_BINS; do
+    echo -e "${BLUE}Running $TEST_BIN with GoogleTest output...${NC}"
+    if [[ "$VERBOSE" -eq 1 ]]; then
+        "$TEST_BIN" --gtest_color=yes | tee -a "$LOG_FILE"
+    else
+        "$TEST_BIN" --gtest_color=no >>"$LOG_FILE"
+    fi
+    if [[ ${PIPESTATUS[0]} -ne 0 ]]; then
+        ALL_PASS=0
+    fi
+done
 
-if [[ ${PIPESTATUS[0]} -eq 0 ]]; then
+if [[ $ALL_PASS -eq 1 ]]; then
     echo -e "${GREEN}✅ All tests passed! Log saved to $LOG_FILE${NC}"
 else
     echo -e "${RED}❌ Some tests failed. See $LOG_FILE for details.${NC}"

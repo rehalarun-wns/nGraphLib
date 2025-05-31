@@ -94,6 +94,22 @@ public:
         throw std::runtime_error("Edge does not exist");
     }
 
+    [[nodiscard]] std::vector<VertexTy> GetNeighbors(const VertexTy &vertex) const
+    {
+        auto it = adjacencyList.find(vertex);
+        if (it != adjacencyList.end())
+        {
+            std::vector<VertexTy> neighbors;
+            neighbors.reserve(it->second.size());
+            for (const auto &neighbor : it->second)
+            {
+                neighbors.push_back(neighbor.first);
+            }
+            return neighbors;
+        }
+        throw std::runtime_error("Vertex does not exist");
+    }
+
     // Clears the graph by removing all edges and vertices.
     void clear()
     {

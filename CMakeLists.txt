@@ -17,8 +17,6 @@ FetchContent_MakeAvailable(googletest)
 
 # Add subdirectories
 add_subdirectory(graphs)
-
-# Add other components as needed
-# add_subdirectory(algorithms)
+add_subdirectory(algorithms)
 # add_subdirectory(examples)
 # add_subdirectory(benchmarks)
