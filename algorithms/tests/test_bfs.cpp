@@ -2,6 +2,8 @@
 #include "algorithm_factory.h"
 #include "directed_graph.h"
 #include "undirected_graph.h"
+#include <vector>
+#include <algorithm>
 
 using GraphTypes = ::testing::Types<
     DirectedGraph<int>,

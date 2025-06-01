@@ -1,7 +1,7 @@
 #ifndef BFS_H
 #define BFS_H
 
-#include <unordered_set>
+#include <unordered_map>
 #include <queue>
 #include <vector>
 #include <string>
@@ -10,18 +10,20 @@
 
 namespace Graph
 {
-    template <typename GraphT>
+    template <typename GraphT, typename OutputT>
     class BFS : public IAlgorithm<GraphT, std::vector<typename GraphT::VertexTy>>
     {
+        static_assert(std::is_same_v<OutputT, std::vector<typename GraphT::VertexTy>>,
+                      "BFS output type must be std::vector<VertexTy>");
+
     public:
-        using OutputT = std::vector<typename GraphT::VertexTy>;
         OutputT run(GraphT &graph, typename GraphT::VertexTy start_vertex) override
         {
             OutputT visited_order;
-            std::unordered_set<typename GraphT::VertexTy> visited;
+            std::unordered_map<typename GraphT::VertexTy, bool, typename GraphT::HashTy> visited;
             std::queue<typename GraphT::VertexTy> queue;
             queue.push(start_vertex);
-            visited.insert(start_vertex);
+            visited[start_vertex] = true;
             while (!queue.empty())
             {
                 auto current = queue.front();
@@ -29,10 +31,11 @@ namespace Graph
                 visited_order.push_back(current);
                 for (const auto &neighbor : graph.GetNeighbors(current))
                 {
-                    if (!visited.count(neighbor))
+                    auto neighbor_vertex = neighbor.first;
+                    if (!visited[neighbor_vertex])
                     {
-                        visited.insert(neighbor);
-                        queue.push(neighbor);
+                        visited[neighbor_vertex] = true;
+                        queue.push(neighbor_vertex);
                     }
                 }
             }

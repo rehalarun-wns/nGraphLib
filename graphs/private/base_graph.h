@@ -12,7 +12,7 @@
 
 // Base class for Graph representation using an adjacency list.
 // Supports both directed and undirected graphs using inheritance.
-template <typename _VertexTy, typename _WeightTy = double, typename _Hash = std::hash<_VertexTy>, bool _UsePMR = false>
+template <typename _VertexTy, typename _WeightTy = double, typename _Hash = std::hash<_VertexTy>>
 class BaseGraph
 {
 public:
@@ -21,33 +21,19 @@ public:
     using HashTy = _Hash;
 
 protected:
-    // Define the adjacency list type based on whether a polymorphic memory resource (PMR) is used.
-    using MapType = std::conditional_t<
-        _UsePMR,
-        std::pmr::unordered_map<VertexTy, std::pmr::unordered_map<VertexTy, WeightT, HashTy>, HashTy>,
-        std::unordered_map<VertexTy, std::unordered_map<VertexTy, WeightT, HashTy>, HashTy>>;
+    using MapType =
+        std::unordered_map<VertexTy, std::unordered_map<VertexTy, WeightT, HashTy>, HashTy>;
 
-    MapType adjacencyList;                              // Stores the graph edges
-    std::pmr::monotonic_buffer_resource bufferResource; // Adaptive buffer for PMR allocation
+    MapType adjacencyList; // Stores the graph edges
     HashTy hashFunction;
 
 public:
     // Constructor allows optional use of a custom memory resource and dynamically allocates buffer size.
     explicit BaseGraph(size_t estimatedVertices = 100,
                        size_t estimatedEdges = 200,
-                       std::pmr::memory_resource *resource = std::pmr::get_default_resource(),
                        HashTy hashFunc = HashTy{})
-        : bufferResource(estimatedVertices * sizeof(VertexTy) + estimatedEdges * sizeof(WeightT)),
-          hashFunction(hashFunc)
+        : hashFunction(hashFunc), adjacencyList(MapType(0, hashFunc))
     {
-        if constexpr (_UsePMR)
-        {
-            adjacencyList = MapType(0, hashFunc, resource ? resource : std::pmr::get_default_resource());
-        }
-        else
-        {
-            adjacencyList = MapType(0, hashFunc);
-        }
     }
 
     virtual ~BaseGraph() = default; // Virtual destructor for proper cleanup in derived classes
@@ -57,8 +43,20 @@ public:
     virtual void RemoveVertex(const VertexTy &vertex) = 0;
     virtual void AddEdge(const VertexTy &from, const VertexTy &to, std::optional<WeightT> weight = std::nullopt) = 0;
     virtual void AddEdges(const std::vector<std::tuple<VertexTy, VertexTy, WeightT>> &edges) = 0;
+    virtual bool IsDirected() const = 0;
 
     // implemented methods
+    [[nodiscard]] std::vector<VertexTy> GetVertices() const
+    {
+        std::vector<VertexTy> vertices;
+        vertices.reserve(adjacencyList.size());
+        for (const auto &pair : adjacencyList)
+        {
+            vertices.push_back(pair.first);
+        }
+        return vertices;
+    }
+
     [[nodiscard]] size_t GetDegree(const VertexTy &vertex) const
     {
         bool does_exist = adjacencyList.contains(vertex);
@@ -94,16 +92,16 @@ public:
         throw std::runtime_error("Edge does not exist");
     }
 
-    [[nodiscard]] std::vector<VertexTy> GetNeighbors(const VertexTy &vertex) const
+    [[nodiscard]] std::vector<std::pair<VertexTy, WeightT>> GetNeighbors(const VertexTy &vertex) const
     {
         auto it = adjacencyList.find(vertex);
         if (it != adjacencyList.end())
         {
-            std::vector<VertexTy> neighbors;
+            std::vector<std::pair<VertexTy, WeightT>> neighbors;
             neighbors.reserve(it->second.size());
             for (const auto &neighbor : it->second)
             {
-                neighbors.push_back(neighbor.first);
+                neighbors.emplace_back(neighbor.first, neighbor.second);
             }
             return neighbors;
         }

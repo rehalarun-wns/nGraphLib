@@ -9,17 +9,15 @@
 // DirectedGraph: Inherits from BaseGraph and implements directed edge logic.
 template <typename VertexTy,
           typename WeightT = double,
-          typename HashTy = std::hash<VertexTy>,
-          bool UsePMR = false>
-class DirectedGraph : public BaseGraph<VertexTy, WeightT, HashTy, UsePMR>
+          typename HashTy = std::hash<VertexTy>>
+class DirectedGraph : public BaseGraph<VertexTy, WeightT, HashTy>
 {
-    using Base = BaseGraph<VertexTy, WeightT, HashTy, UsePMR>;
+    using Base = BaseGraph<VertexTy, WeightT, HashTy>;
     using Base::adjacencyList;
     using Base::hashFunction;
 
 public:
     using Base::Base; // Inherit constructors
-
     void AddEdge(const VertexTy &from,
                  const VertexTy &to,
                  std::optional<WeightT> weight = std::nullopt) override;
@@ -27,16 +25,17 @@ public:
     void AddEdges(const std::vector<std::tuple<VertexTy, VertexTy, WeightT>> &edges) override;
     void RemoveEdge(const VertexTy &from, const VertexTy &to) override;
     void RemoveVertex(const VertexTy &vertex) override;
-
     [[nodiscard]] size_t GetNumOfEdges() const;
+
+    [[nodiscard]] bool IsDirected() const override { return true; }
 };
 
 // --- Implementation ---
 
-template <typename VertexTy, typename WeightT, typename HashTy, bool UsePMR>
-void DirectedGraph<VertexTy, WeightT, HashTy, UsePMR>::AddEdge(const VertexTy &from,
-                                                               const VertexTy &to,
-                                                               std::optional<WeightT> weight)
+template <typename VertexTy, typename WeightT, typename HashTy>
+void DirectedGraph<VertexTy, WeightT, HashTy>::AddEdge(const VertexTy &from,
+                                                       const VertexTy &to,
+                                                       std::optional<WeightT> weight)
 {
     if (!weight)
         weight = static_cast<WeightT>(1);
@@ -48,8 +47,8 @@ void DirectedGraph<VertexTy, WeightT, HashTy, UsePMR>::AddEdge(const VertexTy &f
     }
 }
 
-template <typename VertexTy, typename WeightT, typename HashTy, bool UsePMR>
-void DirectedGraph<VertexTy, WeightT, HashTy, UsePMR>::AddEdges(
+template <typename VertexTy, typename WeightT, typename HashTy>
+void DirectedGraph<VertexTy, WeightT, HashTy>::AddEdges(
     const std::vector<std::tuple<VertexTy, VertexTy, WeightT>> &edges)
 {
     for (const auto &[from, to, weight] : edges)
@@ -58,9 +57,9 @@ void DirectedGraph<VertexTy, WeightT, HashTy, UsePMR>::AddEdges(
     }
 }
 
-template <typename VertexTy, typename WeightT, typename HashTy, bool UsePMR>
-void DirectedGraph<VertexTy, WeightT, HashTy, UsePMR>::RemoveEdge(const VertexTy &from,
-                                                                  const VertexTy &to)
+template <typename VertexTy, typename WeightT, typename HashTy>
+void DirectedGraph<VertexTy, WeightT, HashTy>::RemoveEdge(const VertexTy &from,
+                                                          const VertexTy &to)
 {
     auto it = this->adjacencyList.find(from);
     if (it != this->adjacencyList.end())
@@ -75,8 +74,8 @@ void DirectedGraph<VertexTy, WeightT, HashTy, UsePMR>::RemoveEdge(const VertexTy
     }
 }
 
-template <typename VertexTy, typename WeightT, typename HashTy, bool UsePMR>
-void DirectedGraph<VertexTy, WeightT, HashTy, UsePMR>::RemoveVertex(const VertexTy &vertex)
+template <typename VertexTy, typename WeightT, typename HashTy>
+void DirectedGraph<VertexTy, WeightT, HashTy>::RemoveVertex(const VertexTy &vertex)
 {
     // Check if the vertex exists
     const auto does_vertex_exist = this->adjacencyList.contains(vertex);
@@ -94,8 +93,8 @@ void DirectedGraph<VertexTy, WeightT, HashTy, UsePMR>::RemoveVertex(const Vertex
     }
 }
 
-template <typename VertexTy, typename WeightT, typename HashTy, bool UsePMR>
-size_t DirectedGraph<VertexTy, WeightT, HashTy, UsePMR>::GetNumOfEdges() const
+template <typename VertexTy, typename WeightT, typename HashTy>
+size_t DirectedGraph<VertexTy, WeightT, HashTy>::GetNumOfEdges() const
 {
     return this->GetNumOfDirectedEdges();
 }

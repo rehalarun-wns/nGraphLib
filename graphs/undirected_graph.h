@@ -7,10 +7,10 @@
 #include <vector>
 
 // UndirectedGraph: Inherits from BaseGraph and implements undirected edge logic.
-template <typename VertexTy, typename WeightT = double, typename HashTy = std::hash<VertexTy>, bool UsePMR = false>
-class UndirectedGraph : public BaseGraph<VertexTy, WeightT, HashTy, UsePMR>
+template <typename VertexTy, typename WeightT = double, typename HashTy = std::hash<VertexTy>>
+class UndirectedGraph : public BaseGraph<VertexTy, WeightT, HashTy>
 {
-    using Base = BaseGraph<VertexTy, WeightT, HashTy, UsePMR>;
+    using Base = BaseGraph<VertexTy, WeightT, HashTy>;
     using Base::adjacencyList;
     using Base::hashFunction;
 
@@ -21,13 +21,14 @@ public:
     void AddEdges(const std::vector<std::tuple<VertexTy, VertexTy, WeightT>> &edges) override;
     void RemoveEdge(const VertexTy &from, const VertexTy &to) override;
     void RemoveVertex(const VertexTy &vertex) override;
-
     [[nodiscard]] size_t GetNumOfEdges() const;
+
+    [[nodiscard]] bool IsDirected() const override { return false; }
 };
 
 // --- Implementation ---
-template <typename VertexTy, typename WeightT, typename HashTy, bool UsePMR>
-void UndirectedGraph<VertexTy, WeightT, HashTy, UsePMR>::AddEdge(const VertexTy &from, const VertexTy &to, std::optional<WeightT> weight)
+template <typename VertexTy, typename WeightT, typename HashTy>
+void UndirectedGraph<VertexTy, WeightT, HashTy>::AddEdge(const VertexTy &from, const VertexTy &to, std::optional<WeightT> weight)
 {
     if (!weight)
         weight = static_cast<WeightT>(1);
@@ -35,8 +36,8 @@ void UndirectedGraph<VertexTy, WeightT, HashTy, UsePMR>::AddEdge(const VertexTy 
     this->adjacencyList[to][from] = *weight; // Add the reverse edge for undirected graph
 }
 
-template <typename VertexTy, typename WeightT, typename HashTy, bool UsePMR>
-void UndirectedGraph<VertexTy, WeightT, HashTy, UsePMR>::AddEdges(const std::vector<std::tuple<VertexTy, VertexTy, WeightT>> &edges)
+template <typename VertexTy, typename WeightT, typename HashTy>
+void UndirectedGraph<VertexTy, WeightT, HashTy>::AddEdges(const std::vector<std::tuple<VertexTy, VertexTy, WeightT>> &edges)
 {
     for (const auto &[from, to, weight] : edges)
     {
@@ -45,8 +46,8 @@ void UndirectedGraph<VertexTy, WeightT, HashTy, UsePMR>::AddEdges(const std::vec
     }
 }
 
-template <typename VertexTy, typename WeightT, typename HashTy, bool UsePMR>
-void UndirectedGraph<VertexTy, WeightT, HashTy, UsePMR>::RemoveEdge(const VertexTy &from, const VertexTy &to)
+template <typename VertexTy, typename WeightT, typename HashTy>
+void UndirectedGraph<VertexTy, WeightT, HashTy>::RemoveEdge(const VertexTy &from, const VertexTy &to)
 {
     auto it_from = this->adjacencyList.find(from);
     if (it_from == this->adjacencyList.end() || it_from->second.find(to) == it_from->second.end())
@@ -67,8 +68,8 @@ void UndirectedGraph<VertexTy, WeightT, HashTy, UsePMR>::RemoveEdge(const Vertex
         this->adjacencyList.erase(it_to);
 }
 
-template <typename VertexTy, typename WeightT, typename HashTy, bool UsePMR>
-void UndirectedGraph<VertexTy, WeightT, HashTy, UsePMR>::RemoveVertex(const VertexTy &vertex)
+template <typename VertexTy, typename WeightT, typename HashTy>
+void UndirectedGraph<VertexTy, WeightT, HashTy>::RemoveVertex(const VertexTy &vertex)
 {
     const auto does_vertex_exist = this->adjacencyList.contains(vertex);
     if (!does_vertex_exist)
@@ -85,8 +86,8 @@ void UndirectedGraph<VertexTy, WeightT, HashTy, UsePMR>::RemoveVertex(const Vert
     }
 }
 
-template <typename VertexTy, typename WeightT, typename HashTy, bool UsePMR>
-size_t UndirectedGraph<VertexTy, WeightT, HashTy, UsePMR>::GetNumOfEdges() const
+template <typename VertexTy, typename WeightT, typename HashTy>
+size_t UndirectedGraph<VertexTy, WeightT, HashTy>::GetNumOfEdges() const
 {
     size_t num_of_directed_edges = this->GetNumOfDirectedEdges();
     if (num_of_directed_edges % 2 != 0)

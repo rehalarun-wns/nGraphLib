@@ -3,17 +3,19 @@
 
 #include <unordered_set>
 #include <stack>
-#include <iostream>
-
+#include <vector>
+#include <string>
 #include "algorithms/abstract_algo.h"
 
 namespace Graph
 {
-    template <typename GraphT>
-    class DFS : public IAlgorithm<GraphT, std::vector<typename GraphT::VertexTy>>
+    template <typename GraphT, typename OutputT>
+    class DFS : public IAlgorithm<GraphT, OutputT>
     {
+        static_assert(std::is_same_v<OutputT, std::vector<typename GraphT::VertexTy>>,
+                      "DFS output type must be std::vector<VertexTy>");
+
     public:
-        using OutputT = std::vector<typename GraphT::VertexTy>;
         OutputT run(GraphT &graph, typename GraphT::VertexTy start_vertex) override
         {
             OutputT visited_order;
@@ -31,9 +33,10 @@ namespace Graph
                 visited_order.push_back(current);
                 for (const auto &neighbor : graph.GetNeighbors(current))
                 {
-                    if (!visited.count(neighbor))
+                    auto neighbor_vertex = neighbor.first;
+                    if (!visited.count(neighbor_vertex))
                     {
-                        stack.push(neighbor);
+                        stack.push(neighbor_vertex);
                     }
                 }
             }
