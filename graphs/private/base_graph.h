@@ -108,6 +108,11 @@ public:
         throw std::runtime_error("Vertex does not exist");
     }
 
+    [[nodiscard]] bool IsEmpty() const
+    {
+        return adjacencyList.empty();
+    }
+
     // Clears the graph by removing all edges and vertices.
     void clear()
     {

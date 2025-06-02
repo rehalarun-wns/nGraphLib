@@ -16,8 +16,24 @@ namespace Graph
         {
             if (graph.IsDirected())
                 throw std::runtime_error("Collapse1dChains algorithm is not applicable for directed graphs.");
+            if (graph.IsEmpty())
+                return graph; // Return empty graph if it is empty
+
+            GraphT collapsed_graph;
+            std::vector<typename GraphT::VertexTy> heigher_degree_vertices;
+            for (const auto &vertex : graph.GetVertices())
+            {
+                if (graph.GetDegree(vertex) > 2)
+                    heigher_degree_vertices.push_back(vertex);
+            }
+            if (heigher_degree_vertices.empty())
+            {
+
+                return graph;
+            }
         }
         std::string name() const override { return "GetComponents"; }
+        std::string output_type() const override { return "GraphT"; }
     };
 
 } // namespace Graph

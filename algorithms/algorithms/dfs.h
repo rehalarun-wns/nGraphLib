@@ -43,6 +43,7 @@ namespace Graph
             return visited_order;
         }
         std::string name() const override { return "DFS"; }
+        std::string output_type() const override { return "std::vector<VertexTy>"; }
     };
 }
 

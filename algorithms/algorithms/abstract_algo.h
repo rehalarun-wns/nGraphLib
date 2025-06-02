@@ -11,6 +11,7 @@ namespace Graph
         virtual ~IAlgorithm() = default;
         virtual OutputT run(GraphT &graph, typename GraphT::VertexTy start_vertex) = 0;
         virtual std::string name() const = 0;
+        virtual std::string output_type() const = 0;
     };
 } // namespace nGraphAlgo
 

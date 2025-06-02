@@ -70,6 +70,7 @@ namespace Graph
             return components;
         }
         std::string name() const override { return "GetComponents"; }
+        std::string output_type() const override { return "std::vector<GraphT>"; }
     };
 
 } // namespace Graph

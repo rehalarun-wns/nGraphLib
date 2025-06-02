@@ -42,6 +42,7 @@ namespace Graph
             return visited_order;
         }
         std::string name() const override { return "BFS"; }
+        std::string output_type() const override { return "std::vector<VertexTy>"; }
     };
 } // namespace Graph
 

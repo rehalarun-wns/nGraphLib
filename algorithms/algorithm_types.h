@@ -5,9 +5,10 @@ namespace Graph
 {
     enum class AlgorithmType
     {
-        DFS_Ty,          // Depth-First Search
-        BFS_Ty,          // Breadth-First Search
-        GetComponents_Ty // Get Connected Components
+        DFS_Ty,             // Depth-First Search
+        BFS_Ty,             // Breadth-First Search
+        GetComponents_Ty,   // Get Connected Components
+        Collapse1dChains_Ty // Collapse 1D Chains
     };
 
 } // namespace Graph
