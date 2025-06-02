@@ -26,7 +26,7 @@ TYPED_TEST(BFSTest, VisitsAllReachableVertices)
     g.AddEdge(3, 4);
     g.AddEdge(1, 5);
 
-    auto bfs = Graph::AlgorithmFactory<typename TestFixture::GraphType, std::vector<int>>::create(Graph::AlgorithmType::BFS_Ty);
+    auto bfs = Graph::AlgorithmFactory<typename TestFixture::GraphType, Graph::AlgorithmType::BFS_Ty>::create();
     ASSERT_TRUE(bfs != nullptr);
     auto visited_order = bfs->run(g, 1);
 
@@ -43,7 +43,7 @@ TYPED_TEST(BFSTest, HandlesDisconnectedGraph)
     g.AddEdge(1, 2);
     g.AddEdge(3, 4);
 
-    auto bfs = Graph::AlgorithmFactory<typename TestFixture::GraphType, std::vector<int>>::create(Graph::AlgorithmType::BFS_Ty);
+    auto bfs = Graph::AlgorithmFactory<typename TestFixture::GraphType, Graph::AlgorithmType::BFS_Ty>::create();
     ASSERT_TRUE(bfs != nullptr);
     auto visited_order = bfs->run(g, 1);
 
@@ -56,7 +56,7 @@ TYPED_TEST(BFSTest, HandlesEmptyGraph)
 {
     typename TestFixture::GraphType g;
 
-    auto bfs = Graph::AlgorithmFactory<typename TestFixture::GraphType, std::vector<int>>::create(Graph::AlgorithmType::BFS_Ty);
+    auto bfs = Graph::AlgorithmFactory<typename TestFixture::GraphType, Graph::AlgorithmType::BFS_Ty>::create();
     ASSERT_TRUE(bfs != nullptr);
     EXPECT_THROW(bfs->run(g, 1), std::runtime_error);
 }
@@ -66,7 +66,7 @@ TYPED_TEST(BFSTest, HandlesSingleVertexGraph)
     typename TestFixture::GraphType g;
     g.AddEdge(1, 1); // Self-loop
 
-    auto bfs = Graph::AlgorithmFactory<typename TestFixture::GraphType, std::vector<int>>::create(Graph::AlgorithmType::BFS_Ty);
+    auto bfs = Graph::AlgorithmFactory<typename TestFixture::GraphType, Graph::AlgorithmType::BFS_Ty>::create();
     ASSERT_TRUE(bfs != nullptr);
     auto visited_order = bfs->run(g, 1);
 
@@ -81,7 +81,7 @@ TYPED_TEST(BFSTest, HandlesGraphWithSelfLoops)
     g.AddEdge(2, 2); // Self-loop
     g.AddEdge(2, 3);
 
-    auto bfs = Graph::AlgorithmFactory<typename TestFixture::GraphType, std::vector<int>>::create(Graph::AlgorithmType::BFS_Ty);
+    auto bfs = Graph::AlgorithmFactory<typename TestFixture::GraphType, Graph::AlgorithmType::BFS_Ty>::create();
     ASSERT_TRUE(bfs != nullptr);
     auto visited_order = bfs->run(g, 1);
 
@@ -101,7 +101,7 @@ TYPED_TEST(BFSTest, HandlesGraphWithMultipleEdges)
     g.AddEdge(4, 5);
     g.AddEdge(5, 1); // Cycle
 
-    auto bfs = Graph::AlgorithmFactory<typename TestFixture::GraphType, std::vector<int>>::create(Graph::AlgorithmType::BFS_Ty);
+    auto bfs = Graph::AlgorithmFactory<typename TestFixture::GraphType, Graph::AlgorithmType::BFS_Ty>::create();
     ASSERT_TRUE(bfs != nullptr);
     auto visited_order = bfs->run(g, 1);
 

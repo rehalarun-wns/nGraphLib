@@ -7,45 +7,54 @@
 #include "algorithms/bfs.h"
 #include "algorithms/components.h"
 #include <type_traits>
+#include <memory>
 
 namespace Graph
 {
-    template <typename GraphT, typename OutputT>
+    // Traits to map AlgorithmType to output type
+    template <typename GraphT, AlgorithmType AlgoTy>
+    struct AlgorithmOutputType;
+
+    template <typename GraphT>
+    struct AlgorithmOutputType<GraphT, AlgorithmType::DFS_Ty>
+    {
+        using type = std::vector<typename GraphT::VertexTy>;
+    };
+
+    template <typename GraphT>
+    struct AlgorithmOutputType<GraphT, AlgorithmType::BFS_Ty>
+    {
+        using type = std::vector<typename GraphT::VertexTy>;
+    };
+
+    template <typename GraphT>
+    struct AlgorithmOutputType<GraphT, AlgorithmType::GetComponents_Ty>
+    {
+        using type = std::vector<GraphT>;
+    };
+
+    template <typename GraphT, AlgorithmType type>
     class AlgorithmFactory
     {
     public:
-        static std::unique_ptr<IAlgorithm<GraphT, OutputT>> create(AlgorithmType type)
+        using OutputT = typename AlgorithmOutputType<GraphT, type>::type;
+
+        static std::unique_ptr<IAlgorithm<GraphT, OutputT>> create()
         {
-            switch (type)
+            if constexpr (type == AlgorithmType::DFS_Ty)
             {
-            case AlgorithmType::DFS_Ty:
-                if constexpr (std::is_same_v<OutputT, std::vector<typename GraphT::VertexTy>>)
-                {
-                    return std::make_unique<DFS<GraphT, OutputT>>();
-                }
-                else
-                {
-                    return nullptr;
-                }
-            case AlgorithmType::BFS_Ty:
-                if constexpr (std::is_same_v<OutputT, std::vector<typename GraphT::VertexTy>>)
-                {
-                    return std::make_unique<BFS<GraphT, OutputT>>();
-                }
-                else
-                {
-                    return nullptr;
-                }
-            case AlgorithmType::GetComponents_Ty:
-                if constexpr (std::is_same_v<OutputT, std::vector<GraphT>>)
-                {
-                    return std::make_unique<GetComponents<GraphT, OutputT>>();
-                }
-                else
-                {
-                    return nullptr;
-                }
-            default:
+                return std::make_unique<DFS<GraphT, OutputT>>();
+            }
+            else if constexpr (type == AlgorithmType::BFS_Ty)
+            {
+                return std::make_unique<BFS<GraphT, OutputT>>();
+            }
+            else if constexpr (type == AlgorithmType::GetComponents_Ty)
+            {
+                return std::make_unique<GetComponents<GraphT, OutputT>>();
+            }
+            else
+            {
                 return nullptr;
             }
         }

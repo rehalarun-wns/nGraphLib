@@ -25,9 +25,7 @@ TYPED_TEST(ComponentsTest, SingleComponent)
     g.AddEdge(1, 2);
     g.AddEdge(3, 1);
 
-    auto algo = Graph::AlgorithmFactory<
-        typename TestFixture::GraphType,
-        std::vector<typename TestFixture::GraphType>>::create(Graph::AlgorithmType::GetComponents_Ty);
+    auto algo = Graph::AlgorithmFactory<typename TestFixture::GraphType, Graph::AlgorithmType::GetComponents_Ty>::create();
     ASSERT_TRUE(algo != nullptr);
 
     if (g.IsDirected())
@@ -60,7 +58,8 @@ TYPED_TEST(ComponentsTest, TwoComponents)
     g.AddEdge(4, 7);
     g.AddEdge(8, 7);
 
-    auto algo = Graph::AlgorithmFactory<typename TestFixture::GraphType, std::vector<typename TestFixture::GraphType>>::create(Graph::AlgorithmType::GetComponents_Ty);
+    auto algo = Graph::AlgorithmFactory<typename TestFixture::GraphType, Graph::AlgorithmType::GetComponents_Ty>::create();
+
     ASSERT_TRUE(algo != nullptr);
     if (g.IsDirected())
     {
